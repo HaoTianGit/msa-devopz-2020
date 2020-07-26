@@ -5,32 +5,27 @@
 
 trigger:
 - master
-- develop
-
-pool:
-  vmImage: 'ubuntu-latest'
 
 variables:
   rootDir: 'my-app'
   buildDir: '$(rootDir)/build'
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
+
 - script: |
     cd $(rootDir)
     npm install
     npm run build
     cd ..
   displayName: 'npm install and build'
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
-  
+
 - task: ArchiveFiles@2
   inputs:
     rootFolderOrFile: '$(buildDir)'
@@ -38,3 +33,9 @@ steps:
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
     replaceExistingArchive: true
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
